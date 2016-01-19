@@ -1,0 +1,3 @@
+Input File Name : input.txt . 
+Input File Size : 16 Bytes .
+Number of matches of the search string - 'abc' in input file : 3 . 

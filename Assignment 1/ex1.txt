@@ -1,0 +1,3 @@
+Input File Name : example1 . 
+Input File Size : 8289 Bytes .
+Number of matches of the search string - 'Sly' in input file : 26 . 
