@@ -5,7 +5,7 @@
 
 //Buffer size to read the input file.
 //The input file may not fit entirely in the In-Memory.
-#define BUFFER_SIZE 10000
+#define BUFFER_SIZE 10
 
 int match(char [], char []);
 
@@ -24,34 +24,71 @@ int main(int argc, char* argv[]){
 	int search_string_length = strlen(argv[2]);
 	char search_string[search_string_length];
 	strcpy(search_string, argv[2]);
-	//printf("search string = %s\n", search_string);
+	printf("search string = %s, %d\n", search_string, strlen(search_string));
 	//Declare buffer 
 	char buffer[BUFFER_SIZE];
-	
+	char offset[BUFFER_SIZE]="";
+	char temp[BUFFER_SIZE]="";
+	int skip = 0;
 	int count = 0; //variable to store number of string matches.
 	int iteration = 0; //To track number of times buffer is refreshed.
-	char* s[search_string_length];//strncpy(substr, buff+10, 4);
+	//char* s[search_string_length];//strncpy(substr, buff+10, 4);
 	//reading the file and counting the number of string matches.
+	
 	while (!feof(input_file)){
 		if (iteration == 0){
 			if(fgets(buffer, BUFFER_SIZE, input_file) == NULL){
 				break;
 			}
-			printf("string read = %s\n", buffer);
-			iteration++;
+			//printf("0. buffer string size = %d\t", strlen(buffer));
+			printf("0. string read = %s\n", buffer);
+			count  = count + match(buffer,search_string);
+			iteration++;	
+			strncpy(offset, buffer+strlen(buffer)-search_string_length+1, search_string_length-1);
+			printf("offset before = %s\t%d\n", offset, strlen(buffer));
 		}else{
-			//fseek(input_file,-1*(search_string_length-1), SEEK_CUR);
-			//strncpy(s, buffer, search_string_length-1);
-			//s[search_string_length-1] = '\0';
-			printf("string offset = %s\t", s);
-			if(fgets(buffer, BUFFER_SIZE, input_file) == NULL)
+			//printf("buffer text = %s\n", buffer);
+			strncpy(offset, buffer+strlen(buffer)-search_string_length+1, search_string_length-1);
+			//printf("offset just before read = %s\n", offset);
+			if(fgets(buffer, BUFFER_SIZE-search_string_length+1, input_file) == NULL){
 				break;
-			printf("string read = %s\n", buffer);
+			}
+			strcpy(temp,offset);
+			//if(buffer[strlen(buffer)-1] == "\n"){
+			//	printf("hi\n", temp);
+			//}
+			strcat(temp,buffer);
+			//strncat(buffer,offset,2);
+			printf("temp read = %s\n", temp);
+			//strcpy(offset,"");
+			//printf("offset after read = %s\n", offset);
+			count  = count + match(temp,search_string);
 		}
-		count  = count + match(buffer,search_string);
+		
 		//printf("input file = %s and count = %d\n", buffer,count);  //debug line.
 	}
-	
+	/*
+				strcpy(offset, "");
+			strncpy(offset, buffer+strlen(buffer)-search_string_length+1, search_string_length-1);
+			printf("offset before = %s\t", offset);
+			//s[search_string_length-1] = '\0';
+			if(fgets(buffer, BUFFER_SIZE -1*(search_string_length-1), input_file) == NULL)
+				break;
+			//printf("string read = %s\t", buffer);
+			strcat(offset,buffer);
+			printf("offset after = %s\t", offset);
+			count  = count + match(offset,search_string);
+	*/
+	/*
+	while (fgets(buffer, BUFFER_SIZE, input_file) != NULL){
+		printf("string read = %s\n", buffer);
+		count  = count + match(buffer,search_string);
+		if(strlen(buffer) == BUFFER_SIZE){
+			fseek(input_file,-1*(search_string_length-1),SEEK_CUR);
+		}
+		//printf("input file = %s and count = %d\n", buffer,count);  //debug line.
+	}
+	*/
 	//count  = match(buf,search_string);  //debug line.
 	//printing number of string matches.
 	printf("count = %d\n", count);
