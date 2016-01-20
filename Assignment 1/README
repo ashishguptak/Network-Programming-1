@@ -1,0 +1,19 @@
+
+SearchString
+============
+This code helps to count the number of ocuurances of a given String in the given input text file.
+We are reading the input file into buffer of fixed size. Hence we can even run this code for larger input file, without worrying about in memory storage.
+
+Implementation Logic
+====================
+The code traverses through the input string in a serial fashion and searches for the given string.
+Every time a match is found the count is incremented. In the end count is returned.
+fseek() and ftell() commands are used to shift the pointer to the end of file and determine the size fo the file.
+
+Instructions to run the SearchString.c 
+======================================
+1. Run 'make' in the terminal.
+	//All the objct filees will be created.
+2. Run the command to search a given string from the input in the following format.
+	count <input-filename> <search-string> <output-filename> 
+	// Besides giving some output, an outfile is also created.
