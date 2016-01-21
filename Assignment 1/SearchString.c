@@ -25,10 +25,26 @@ int match(char [], char []);
 
 int main(int argc, char* argv[]){
 	
+	//check for the number of input arguments.
+	if(argc < 4){
+		printf("Too few input arguments.\n");
+		printf("Please run the program in the following format.\n");
+		printf("\tcount <input-filename> <search-string> <output-filename>");
+		return 0;
+	}
 	//Parse Input Arguments to get the file names.
 	FILE* input_file = fopen(argv[1], "r");
+	//check for non existance of input file.
+	if(!input_file){
+		printf("Input file doesn't exist.");
+		return 0;
+	}
 	FILE* output_file = fopen(argv[3], "w");
-
+	if(!output_file){
+		printf("Error in creating outputfile.");
+		return 0;
+	}
+	
 	//Steps to get the size of the file.
 	fseek(input_file, 0, SEEK_END); // seek to end of file 	
 	int file_size = ftell(input_file)+1; // get current file pointer. +1 to account for end-of-file character.
@@ -36,16 +52,20 @@ int main(int argc, char* argv[]){
 	
 	//Parse String to be searched.
 	int search_string_length = strlen(argv[2]);
+	//checking if the searchn string is empty.
+	if(search_string_length==0){
+		printf("Search string is empty.\n");
+	}
 	char search_string[search_string_length];
 	strcpy(search_string, argv[2]);
 	//printf("search string = %s, %d\n", search_string, strlen(search_string)); //debug line.
 	//verify if the file size is less than the length of the search string.
 
 	if((file_size-1) < search_string_length){
-		if(file_size == 0){
+		if(file_size == 1){
 			printf("Input file is empty.");
 		}else{
-			printf("The input file is very small to search for the given string.\nWe can conclude search string doesnt occur in the text file.");
+			printf("The input file is very small to search for the given string.\nWe can conclude search string doesnt occur in the text file. ");
 		}
 		fprintf(output_file,"Input File Name : %s . \n",argv[1]);
 		fprintf(output_file,"Input File Size : %d Bytes .\n",file_size);
