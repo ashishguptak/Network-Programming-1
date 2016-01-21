@@ -1,3 +1,18 @@
+/********************************
+* Lab Assignment 1.
+* -----------------
+* SearchString.c
+* 
+* This code helps to count the number of ocuurances of a given String in the given input text file.
+* We are reading the input file into buffer of fixed size. 
+* Hence we can even run this code for larger input file, without worrying about in memory storage.
+*
+*
+* @author : Rakshith Kunchum
+* @version : 1.0.0
+* @email : kunchum.1@osu.edu
+*/
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -23,7 +38,21 @@ int main(int argc, char* argv[]){
 	int search_string_length = strlen(argv[2]);
 	char search_string[search_string_length];
 	strcpy(search_string, argv[2]);
-	//printf("search string = %s, %d\n", search_string, strlen(search_string));
+	//printf("search string = %s, %d\n", search_string, strlen(search_string)); //debug line.
+	//verify if the file size is less than the length of the search string.
+
+	if((file_size-1) < search_string_length){
+		if(file_size == 0){
+			printf("Input file is empty.");
+		}else{
+			printf("The input file is very small to search for the given string.\nWe can conclude search string doesnt occur in the text file.");
+		}
+		fprintf(output_file,"Input File Name : %s . \n",argv[1]);
+		fprintf(output_file,"Input File Size : %d Bytes .\n",file_size);
+		fprintf(output_file,"Number of matches of the search string - '%s' in input file : %d . \n",search_string,0);
+		fclose(output_file);
+		return 0;
+	}
 	//Declare buffer 
 	char buffer[BUFFER_SIZE]="";
 	int count = 0; //variable to store number of string matches.
@@ -50,6 +79,13 @@ int main(int argc, char* argv[]){
 	return 0;
 }
 
+/**************************
+* int match(char input_string[], char search_string[])
+* input_string : String from the input text file.
+* search_string : the string that we are trying to serach in the input file.
+* The code traverses through the input string in a serial fashion and searches for the given string.
+* Every time a match is found the count is incremented. In the end count is returned.
+*/
 int match(char input_string[], char search_string[]){
 	int i, j, k, text_length, search_string_length, position = -1;
 	int count = 0;
