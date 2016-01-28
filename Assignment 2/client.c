@@ -8,7 +8,7 @@
  * @author : Jhansi Lakshmi Kolla, Rakshith Kunchum
  * @version : 1.0.0
  * @email : kolla.4@osu.edu, kunchum.1@osu.edu
- * @date : 24/01/2016
+ * @date : 20/01/2016
  */
  
 #include <stdio.h>
@@ -26,15 +26,19 @@
 #include <strings.h>
 
 #define BUFFER_SIZE 512
-#define HEADER_FILENAME_SIZE 20
-#define HEADER_FILESIZE_SIZE 4
+#define INPUT_FILENAME_SIZE 20
+#define HEADER_FILENAME_SIZE INPUT_FILENAME_SIZE
+#define HEADER_FILESIZE 4
+#define HEADER_SIZE HEADER_FILENAME_SIZE+HEADER_FILESIZE
+#define MAX_PORT_NUMBER 65535
+
 int configure_client_socket (int port, char* ipaddr);
 
-struct sockaddr_in socket_server, free_socket;
+struct sockaddr_in socket_server;
 
 struct header{
-	char filename[HEADER_FILENAME_SIZE];
-    uint32_t filesize;
+	uint32_t file_size;
+	char file_name[HEADER_FILENAME_SIZE];
 };
 
 int main (int argc, char**argv){
@@ -53,36 +57,50 @@ int main (int argc, char**argv){
  		return -1;
 	}
     
-    if(!(inet_pton(AF_INET,argv[1],&(free_socket.sin_addr)))){
+    //check ip address format.
+    if(!(inet_pton(AF_INET,argv[1],&(socket_server.sin_addr)))){
 		printf("Invalid IP Address.\n");
 		return -1;
 	}
 	
-	if(atoi(argv[2]) > 65535){
+	//check port number limit.
+	if(atoi(argv[2]) > MAX_PORT_NUMBER){
 		printf("Port number out of range.\n");
 		return -1;
 	}
     
+    //check the size of the input filename.
+    if(strlen(argv[3]) > INPUT_FILENAME_SIZE-1){
+    	printf("Input filename should be less than 20 characters.\n");
+    	printf("Otherwise the filename will be truncated and sent.\n");
+		//return -1;
+    }
+    //configure the socket for tcp and bind it to the specified ip-address and port.
     socket_file_directory=configure_client_socket(atoi(argv[2]), argv[1]);
     
 	if ((input_file_directory = open(argv[3],O_RDONLY))==-1){
-		perror("Error while opening the file.");
-		return EXIT_FAILURE;
+		printf("Error while opening the file.");
+		return -1;
 	}
     
     if(connect(socket_file_directory,(struct sockaddr*)&socket_server,l)==-1){
         printf("Connection Refused.\n");
 		return -1;
     }
+
     //determining file size.
     FILE* input_file = fopen(argv[3], "r");
 	fseek(input_file, 0, SEEK_END); // seek to end of file 	
 	int file_size = ftell(input_file); 
-	fseek(input_file, 0, SEEK_SET); // seek back to beginning of file
+	fseek(input_file, 0, SEEK_SET); 
 	fclose(input_file);
-    strcpy(file_header.filename,argv[3]);
-    file_header.filesize = file_size;
-    write(socket_file_directory, &file_header, sizeof(file_header));
+
+
+    strcpy(file_header.file_name,argv[3]);
+    file_header.file_size = file_size;
+    n = send(socket_file_directory, &file_header, sizeof(file_header),0);
+    //TODO: Add code to verify sending of header information.
+
 	n = read(input_file_directory,buffer,BUFFER_SIZE);
 	if(n == 0){
 		printf("Input file is empty.\n");
@@ -92,7 +110,8 @@ int main (int argc, char**argv){
 			printf("Error while reading the file.\n");
 			return -1;
 		}
-		m = sendto(socket_file_directory,buffer,n,0,(struct sockaddr*)&socket_server,l);
+		m = send(socket_file_directory,buffer,n,0);
+		//TODO: Add code to verify sending packet information.
 		if(m==-1){
 			printf("Error while sending the file.\n");
 			return -1;
@@ -104,15 +123,15 @@ int main (int argc, char**argv){
 
 	//m=sendto(socket_file_directory,buffer,0,0,(struct sockaddr*)&socket_server,l);
 	
-	printf("File Size : %d\n",count);
+	printf("Input file size : %d\n",count);
 	
+	close(input_file_directory);
     close(socket_file_directory);
 	return EXIT_SUCCESS;
 }
 
-int configure_client_socket (int port, char* ipaddr){
-    int l;
-	int socket_fd;
+int configure_client_socket (int port, char* ip_address){
+    int socket_fd;
     
 	socket_fd = socket(PF_INET,SOCK_STREAM,0);
 	if (socket_fd == -1){
@@ -122,6 +141,5 @@ int configure_client_socket (int port, char* ipaddr){
     
 	socket_server.sin_family=AF_INET;
 	socket_server.sin_port=htons(port);
-
     return socket_fd;
 }
