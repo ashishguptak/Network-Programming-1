@@ -1,0 +1,84 @@
+#!/bin/sh
+echo "Hello World"
+make clean
+make
+echo "=================="
+echo "Test Case 1 : Testing File Tranfer"
+echo "------------------"
+ftps 1234 & 
+sleep 2
+ftpc 127.0.0.1 1234 Makefile 
+sleep 2
+echo "End of Test Case 1"
+echo
+echo
+ps | grep ftps | grep -v grep | awk '{print $1}' | xargs kill
+echo "=================="
+echo "Test Case 2 : Testing invalid ip address"
+echo "------------------"
+ftps 1234 & 
+sleep 1
+if ftpc 127.0.0 1234 Makefile | grep Invalid; then
+	echo "Test case 2 passed"
+fi
+sleep 1
+echo "End of Test Case 2"
+echo
+echo
+ps | grep ftps | grep -v grep | awk '{print $1}' | xargs kill
+echo "=================="
+echo "Test Case 3 : Testing binary file tranfer"
+echo "------------------"
+ftps 1234 & 
+sleep 1
+ftpc 127.0.0.1 1234 1.jpg
+sleep 1
+echo "End of Test Case 3"
+echo
+echo
+ps | grep ftps | grep -v grep | awk '{print $1}' | xargs kill
+echo "=================="
+echo "Test Case 4 : Testing port number out of range"
+echo "------------------"
+ftps 1234 & 
+sleep 1
+ftpc 127.0.0.1 123456 Makefile 
+sleep 1
+echo "End of Test Case 4"
+echo
+echo
+ps | grep ftps | grep -v grep | awk '{print $1}' | xargs kill
+echo "=================="
+echo "Test Case 5 : Testing incorrect number of arguments"
+echo "------------------"
+ftps 1234 & 
+sleep 1
+ftpc 127.0.0.1 1234
+sleep 1
+echo "End of Test Case 5"
+echo
+echo
+ps | grep ftps | grep -v grep | awk '{print $1}' | xargs kill
+echo "=================="
+echo "Test Case 6 : Testing non existant input file."
+echo "------------------"
+ftps 1234 & 
+sleep 1
+ftpc 127.0.0.1 1234 noname.txt
+sleep 1
+echo "End of Test Case 6"
+echo
+echo
+ps | grep ftps | grep -v grep | awk '{print $1}' | xargs kill
+echo "=================="
+echo "Test Case 7 : Testing input file with name more than 20 characters."
+echo "------------------"
+ftps 1234 & 
+sleep 1
+ftpc 127.0.0.1 1234 filenamewithmorethan20characters.txt
+sleep 1
+echo "End of Test Case 7"
+echo
+echo
+ps | grep ftps | grep -v grep | awk '{print $1}' | xargs kill
+echo "=================="

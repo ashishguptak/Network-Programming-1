@@ -1,0 +1,46 @@
+# Makefile for client and server
+
+
+CC = gcc
+
+OBJCLI = ftpc.c socket_helper.h
+
+OBJSRV = ftps.c socket_helper.h
+
+OBJTCPDC =tcpdc.c socket_helper.h
+
+OBJTCPDS =tcpds.c socket_helper.h
+
+CFLAGS = 
+
+# setup for system
+
+
+LIBS = 
+
+
+all: ftpc ftps tcpds tcpdc
+
+
+
+ftpc:	$(OBJCLI)
+	
+	$(CC) $(CFLAGS) -o $@ $(OBJCLI) $(LIBS)
+
+ftps:	$(OBJSRV)
+	
+	$(CC) $(CFLAGS) -o $@ $(OBJSRV) $(LIBS)
+
+tcpdc:	$(OBJTCPDC)
+	
+	$(CC) $(CFLAGS) -o $@ $(OBJTCPDC) $(LIBS)
+
+tcpds:	$(OBJTCPDS)
+	
+	$(CC) $(CFLAGS) -o $@ $(OBJTCPDS) $(LIBS)
+
+
+
+clean:
+	
+	rm ftpc ftps tcpdc tcpds
